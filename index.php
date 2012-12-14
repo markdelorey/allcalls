@@ -1,7 +1,5 @@
 <?php
 
-// Testing a new change
-
 // MAKE IT WORK
 ini_set('memory_limit', '8192M');
 ini_set('auto_detect_line_endings', true);
