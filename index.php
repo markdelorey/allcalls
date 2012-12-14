@@ -1,6 +1,6 @@
 <?php
 
-// Testing a change to the "proposed" branch
+// Testing a change to the "master" branch
 
 // MAKE IT WORK
 ini_set('memory_limit', '8192M');
