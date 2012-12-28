@@ -35,6 +35,10 @@ $ihandle	= fopen($ifile,'r');
 $ofile	= 'old_masters_out.csv';
 $ohandle = fopen($ofile,'w');
 
+// MISSED CALL SCORES FILE
+$missfile = 'old_masters_missed_out.csv';
+$misshandle = fopen($missfile,'w');
+
 $bad_ps_array = array(
 	'12240-1', // Start MarketABusiness from Salesforce
 	'12240-2', 
@@ -292,11 +296,13 @@ $bad_ps_array = array(
 	//'19850-1', // This one is all messed up.. and old and a lost client
 	//'08380-1', // Split
 	//
+	
 );
 
 $count = 0;
 $badscorecount = 0;
 $missedcallcount = 0;
+$blankopcount = 0;
 $outcount = 0;
 
 while( !feof($ihandle) ) {
@@ -320,7 +326,6 @@ while( !feof($ihandle) ) {
 	$opportunity = $row[0];
 	
 	// CALL DATE - $row[1] and $row[2]
-	
 	$remove_from_date = array(
 		'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','@','&','at','.','and',';','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','_','?',',','('
 	);
@@ -362,57 +367,58 @@ while( !feof($ihandle) ) {
 	$rings = $row[11];
 	
 	// CALL SCORE
-	$identified_self = ($row[12] != '') ? $row[12] : '0';
-	$identified_practice = ($row[13] != '') ? $row[13] : '0';
-	$how_help_you = ($row[14] != '') ? $row[14] : '0';
+	$identified_self 		= ($row[12] != '') ? $row[12] : '0';
+	$identified_practice 	= ($row[13] != '') ? $row[13] : '0';
+	$how_help_you 			= ($row[14] != '') ? $row[14] : '0';
 	// $row[15] is blank in standard template
-	$asked_name = ($row[16] != '') ? $row[16] : '0';
-	$best_number = ($row[17] != '') ? $row[17] : '0';
-	$how_practice_found = ($row[18] != '') ? $row[18] : '0';
-	$used_please = ($row[19] != '') ? $row[19] : '0';
-	$used_thank_you = ($row[20] != '') ? $row[20] : '0';
-	$notes = ($row[21] != '') ? $row[21] : '0';
+	$asked_name 			= ($row[16] != '') ? $row[16] : '0';
+	$best_number 			= ($row[17] != '') ? $row[17] : '0';
+	$how_practice_found 	= ($row[18] != '') ? $row[18] : '0';
+	$used_please 			= ($row[19] != '') ? $row[19] : '0';
+	$used_thank_you 		= ($row[20] != '') ? $row[20] : '0';
+	$notes 					= ($row[21] != '') ? $row[21] : '0';
 	// $row[22] is blank in standard template
-	$friendly_tone = ($row[23] != '') ? $row[23] : '0';
-	$enthusiastic_tone = ($row[24] != '') ? $row[24] : '0';
-	$caller_addressed = ($row[25] != '') ? $row[25] : '0';
-	$spoke_clearly = ($row[26] != '') ? $row[26] : '0';
-	$hold_permission = ($row[27] != '') ? $row[27] : '0';
-	$hold_gt_ten = ($row[28] != '') ? $row[28] : '0';
-	$no_interruptions = ($row[29] != '') ? $row[29] : '0';
+	$friendly_tone 			= ($row[23] != '') ? $row[23] : '0';
+	$enthusiastic_tone 		= ($row[24] != '') ? $row[24] : '0';
+	$caller_addressed 		= ($row[25] != '') ? $row[25] : '0';
+	$spoke_clearly 			= ($row[26] != '') ? $row[26] : '0';
+	$hold_permission 		= ($row[27] != '') ? $row[27] : '0';
+	$hold_gt_ten 			= ($row[28] != '') ? $row[28] : '0';
+	$no_interruptions 		= ($row[29] != '') ? $row[29] : '0';
 	// $row[30] is blank in standard template
-	$restated_questions = ($row[31] != '') ? $row[31] : '0';
-	$validated_questions = ($row[32] != '') ? $row[32] : '0';
-	$answered_completely = ($row[33] != '') ? $row[33] : '0';
-	$answered_confidently = ($row[34] != '') ? $row[34] : '0';
-	$minimum_pricing = ($row[35] != '') ? $row[35] : '0';
-	$more_questions = ($row[36] != '') ? $row[36] : '0';
+	$restated_questions		= ($row[31] != '') ? $row[31] : '0';
+	$validated_questions	= ($row[32] != '') ? $row[32] : '0';
+	$answered_completely	= ($row[33] != '') ? $row[33] : '0';
+	$answered_confidently	= ($row[34] != '') ? $row[34] : '0';
+	$minimum_pricing		= ($row[35] != '') ? $row[35] : '0';
+	$more_questions			= ($row[36] != '') ? $row[36] : '0';
 	// $row[37] is blank in standard template
-	$maintained_control = ($row[38] != '') ? $row[38] : '0';
-	$asked_appt = ($row[39] != '') ? $row[39] : '0';
-	$two_appt_choices = ($row[40] != '') ? $row[40] : '0';
-	$appt_scheduled = ($row[41] != '') ? $row[41] : '0';
-	$appt_quantity = ($row[42] != '') ? $row[42] : '0';
+	$maintained_control 	= ($row[38] != '') ? $row[38] : '0';
+	$asked_appt				= ($row[39] != '') ? $row[39] : '0';
+	$two_appt_choices		= ($row[40] != '') ? $row[40] : '0';
+	$appt_scheduled			= ($row[41] != '') ? $row[41] : '0';
+	$appt_quantity			= ($row[42] != '') ? $row[42] : '0';
 	
-	$appt_date = ($row[43] != '' || $row[43] == '1' || $row[43] == '0' ) ? date( 'n/j/Y', strtotime($row[43]) ) : '';
+	$appt_date				= ($row[43] != '' || $row[43] == '1' || $row[43] == '0' ) ? date( 'n/j/Y', strtotime($row[43]) ) : '';
 	// $row[44] is blank in standard template
-	$appt_date_remind = ($row[45] != '') ? $row[45] : '0';
-	$patient_excited = ($row[46] != '') ? $row[46] : '0';
-	$thanked_caller = ($row[47] != '') ? $row[47] : '0';
-	$caller_hung_up = ($row[48] != '') ? $row[48] : '0';
+	$appt_date_remind		= ($row[45] != '') ? $row[45] : '0';
+	$patient_excited		= ($row[46] != '') ? $row[46] : '0';
+	$thanked_caller			= ($row[47] != '') ? $row[47] : '0';
+	$caller_hung_up			= ($row[48] != '') ? $row[48] : '0';
 	// $row[49] is blank in standard template
-	$prospect_stories = ($row[50] != '') ? $row[50] : '0';
-	$prospect_laugh = ($row[51] != '') ? $row[51] : '0';
-	$adapted_info = ($row[52] != '') ? $row[52] : '0';
-	$special_offer = ($row[53] != '') ? $row[53] : '0';
+	$prospect_stories		= ($row[50] != '') ? $row[50] : '0';
+	$prospect_laugh			= ($row[51] != '') ? $row[51] : '0';
+	$adapted_info			= ($row[52] != '') ? $row[52] : '0';
+	$special_offer			= ($row[53] != '') ? $row[53] : '0';
 	
 	$error = false;
 	
-	if( $row[8] == '1' || $row[6] == '0' ) {
+	if( ( $row[8] == '1' || $row[6] == '0' ) && $row[13] != '1' && $row[13] != '0' ) {
 		$missedcallcount++;
 		$error = 'missedtest';
+		fputcsv($misshandle,$row);
 	}
-	
+	/*
 	if( 
 		$row[15] != '' || // Validate blank fields
 		$row[22] != '' ||
@@ -426,8 +432,9 @@ while( !feof($ihandle) ) {
 	}
 	
 	if( $opportunity == '' ) {
+		$blankopcount++;
 		$error = 'blankop';
-	}
+	}*/
 
 	if( !in_array($opportunity, $bad_ps_array) ) {
 	if( !$error) {
@@ -435,6 +442,7 @@ while( !feof($ihandle) ) {
 		$out_array = array(
 			$date . $caller_key, // 0
 			$opportunity,
+			$date_str,
 			$rings, // 2
 			// CALL SCORE
 			$identified_self, // 3
@@ -480,6 +488,8 @@ while( !feof($ihandle) ) {
 			$adapted_info, // 37
 			$special_offer // 38
 		);
+		$outcount++;
+		fputcsv($ohandle,$out_array);
 			
 	} else {
 		$out_array = array();
@@ -493,8 +503,6 @@ while( !feof($ihandle) ) {
 	//echo '<pre>';
 	//print_r($out_array);
 	//echo '</pre>';
-	$outcount++;
-	fputcsv($ohandle,$out_array);
 	
 	}
 	
@@ -502,6 +510,7 @@ while( !feof($ihandle) ) {
 
 echo '<h2>Missed Score Count: '.$missedcallcount.'</h2>';
 echo '<h2>Bad Score Count: '.$badscorecount.'</h2>';
+echo '<h2>Blank Op Count: '.$blankopcount.'</h2>';
 echo '<h2>Out Count: '.$outcount.'</h2>';
 
 fclose( $ohandle );
